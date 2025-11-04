@@ -9,6 +9,9 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
+# Ensure mvnw is executable
+RUN chmod +x mvnw
+
 # Download dependencies (cached layer)
 RUN ./mvnw dependency:go-offline
 
@@ -19,7 +22,7 @@ COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 # Run the Spring Boot app
-CMD ["java", "-jar", "target/*.jar"]
+CMD ["sh", "-c", "java -jar target/*.jar"]
 
 # Expose the app port
 EXPOSE 8080
