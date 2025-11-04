@@ -1,17 +1,25 @@
-# Step 1: Use a base image with Maven to build the app
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Step 2: Use a smaller JDK image to run the app
+# Use the official OpenJDK image as base
 FROM eclipse-temurin:17-jdk
+
+# Set the working directory inside the container
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
 
-# Expose port 8080
+# Copy Maven wrapper and pom.xml first (for faster builds)
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Download dependencies (cached layer)
+RUN ./mvnw dependency:go-offline
+
+# Now copy the rest of the project
+COPY src ./src
+
+# Build the application (skip tests for faster build)
+RUN ./mvnw clean package -DskipTests
+
+# Run the Spring Boot app
+CMD ["java", "-jar", "target/*.jar"]
+
+# Expose the app port
 EXPOSE 8080
-
-# Command to run the app
-ENTRYPOINT ["java", "-jar", "app.jar"]
