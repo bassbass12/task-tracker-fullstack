@@ -1,28 +1,28 @@
-# Use the official OpenJDK image as base
+# Use official Java 17 image
 FROM eclipse-temurin:17-jdk
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml first (for faster builds)
+# Copy Maven wrapper and pom.xml for caching
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Ensure mvnw is executable
+# Make mvnw executable
 RUN chmod +x mvnw
 
 # Download dependencies (cached layer)
 RUN ./mvnw dependency:go-offline
 
-# Now copy the rest of the project
+# Copy source code
 COPY src ./src
 
-# Build the application (skip tests for faster build)
+# Build project (skip tests)
 RUN ./mvnw clean package -DskipTests
 
-# Run the Spring Boot app
-CMD ["sh", "-c", "java -jar target/*.jar"]
-
-# Expose the app port
+# Expose port (optional, documentation)
 EXPOSE 8080
+
+# Run Spring Boot with Render's dynamic PORT
+CMD ["sh", "-c", "java -jar target/task-tracker-0.0.1-SNAPSHOT.jar --server.port=$PORT"]
