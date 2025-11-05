@@ -14,7 +14,8 @@ const TaskForm=({onAdd})=>{
         e.preventDefault();
         if(!form.title.trim()) return alert ("Title required..!");
         try{
-              const response = await fetch("http://localhost:8080/api/tasks",{
+            const baseUrl = import.meta.env.VITE_API_URL;
+              const response = await fetch(`${baseUrl}/api/tasks`,{
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body : JSON.stringify(form),

@@ -30,7 +30,9 @@ function App() {
       async function load()
        {
         try{
-           const response = await fetch("http://localhost:8080/api/tasks");
+          const baseUrl = import.meta.env.VITE_API_URL;
+
+           const response = await fetch(`${baseUrl}/api/tasks`);
            if(!response.ok) throw Error(`HTTP ${response.status}`);
            const data = await response.json();
            setTasks(data);
@@ -105,8 +107,10 @@ const handleToggle = async(id,currentStatus)=>{
       description: task.description,
       status: updatedStatus,
     };
-    // put the updated status to back end 
-    const res = await fetch(`http://localhost:8080/api/tasks/${id}`,{
+    // put the updated status to back end
+    const baseUrl = import.meta.env.VITE_API_URL;
+ 
+    const res = await fetch(`${baseUrl}/api/tasks/${id}`,{
       method: "PUT",
       headers:{"Content-Type" : "application/json"},
       body:JSON.stringify(payload),
@@ -131,7 +135,8 @@ const handleToggle = async(id,currentStatus)=>{
 /* handle delete */
   const handleDelete = async (id)=>{
     try{
-           const response = await fetch(`http://localhost:8080/api/tasks/${id}`,{
+               const baseUrl = import.meta.env.VITE_API_URL;
+           const response = await fetch(`${baseUrl}/api/tasks/${id}`,{
             method: "DELETE",
            });
            if(!response.ok) throw new Error (`HTTP ${response.status}`);
@@ -172,7 +177,8 @@ const handleUpdate = async () => {
   };
   try{
     if(!editId) return;
-    const response = await fetch(`http://localhost:8080/api/tasks/${editId}`, {
+      const baseUrl = import.meta.env.VITE_API_URL;
+    const response = await fetch(`${baseUrl}/api/tasks/${editId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(updatedTask),
